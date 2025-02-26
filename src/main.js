@@ -1,16 +1,22 @@
 import { createSchema, createYoga } from "graphql-yoga";
 import { createServer } from "http";
+import { readFileSync } from "fs";
+import { join } from "path";
+import Query from "./resolvers/Query";
+import Author from "./resolvers/Author";
+import Book from "./resolvers/Book";
+import db from "./db";
 
-const typeDefs = `
-  type Query {
-    hello: String!
-  }
-`;
+const typeDefs = readFileSync(join(__dirname, "../src/schema.graphql"), "utf8");
 
 const resolvers = {
-  Query: {
-    hello: () => "Hello World!",
-  },
+  Query,
+  Author,
+  Book
+};
+
+const context = {
+  db,
 };
 
 // Crear el esquema GraphQL
@@ -23,6 +29,7 @@ const schema = createSchema({
 const yoga = createYoga({
   schema,
   graphqlEndpoint: "/", // Mueve la interfaz de GraphQL a "/"
+  context: { db },
 });
 
 // Crear y arrancar el servidor HTTP
