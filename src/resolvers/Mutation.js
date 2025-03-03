@@ -110,22 +110,18 @@ const Mutation = {
 
     return { ...bookExist, ...data };
   },
-  deleteBook: (parent, args, { db }, info) => {
-    const bookIndex = db.books.findIndex((book) => book.id === args.id);
+  deleteBook: (parent, { id }, { db }, info) => {
+    const bookIndex = db.books.findIndex((book) => book.id === id);
 
-    if (!bookIndex) {
+    if (bookIndex === -1) {
       throw new Error("Book not found");
     }
 
-    db.books = db.books.reduce((acc, book) => {
-      if (book.id != id) {
-        acc.push(book);
-      }
+    const deletedBook = db.books[bookIndex];
 
-      return acc;
-    }, []);
+    db.books = db.books.filter((book) => book.id !== id);
 
-    return bookExist;
+    return deletedBook;
   },
 };
 
