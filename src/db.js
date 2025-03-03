@@ -36,7 +36,7 @@ const users = [
     {
       id: '4',
       name: 'Cesar Vallejo',
-      country: 'Perú',
+      country: 'Francia',
       register_by: '2'
     }
   

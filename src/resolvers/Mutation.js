@@ -45,6 +45,39 @@ const Mutation = {
 
     return { ...userExist, ...data };
   },
+
+  createAuthor: (parent, args, { db }, info) => {
+    const author = {
+      id: uuidv4(),
+      ...args,
+    };
+
+    db.authors.push(author);
+
+    return author;
+  },
+  updateAuthor: (parent, args, { db }, info) => {
+    const { id, ...data } = args;
+    const authorExist = db.authors.find((author) => author.id === id);
+
+    if (!authorExist) {
+      throw new Error("Author not found");
+    }
+
+    db.authors = db.authors.map((author) => {
+      if (author.id === id) {
+        author = {
+          ...author,
+          ...data,
+        };
+        return author;
+      }
+
+      return author;
+    });
+
+    return { ...authorExist, ...data };
+  },
 };
 
 export default Mutation;
