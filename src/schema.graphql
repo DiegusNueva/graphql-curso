@@ -41,6 +41,10 @@ type Mutation {
   deleteBook(id: ID!): Book!
 }
 
+type Subscription {
+  count: Int!
+}
+
 input createUserInput {
   name: String!
   lastName: String!
