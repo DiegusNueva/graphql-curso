@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 
 const Mutation = {
-  createUser: (parent, args, { db }, info) => {
-    const isEmailTaken = db.users.some((user) => user.email === args.email);
+  createUser: (parent, { data }, { db }, info) => {
+    const isEmailTaken = db.users.some((user) => user.email === data.email);
 
     if (isEmailTaken) {
       throw new Error("Email taken");
@@ -10,54 +10,46 @@ const Mutation = {
 
     const user = {
       id: uuidv4(),
-      ...args,
+      ...data,
     };
 
     db.users.push(user);
-
     return user;
   },
-  updateUser: (parent, args, { db }, info) => {
-    const { id, ...data } = args;
+
+  updateUser: (parent, { id, data }, { db }, info) => {
     const userExist = db.users.find((user) => user.id === id);
 
     if (!userExist) {
       throw new Error("User not found");
     }
 
-    const isEmailTaken = db.users.some((user) => user.email === data.email);
+    const isEmailTaken = db.users.some(
+      (user) => user.email === data.email && user.id !== id
+    );
 
     if (isEmailTaken) {
       throw new Error("Email taken");
     }
 
-    db.users = db.users.map((user) => {
-      if (user.id === id) {
-        user = {
-          ...user,
-          ...data,
-        };
-        return user;
-      }
+    db.users = db.users.map((user) =>
+      user.id === id ? { ...user, ...updateData } : user
+    );
 
-      return user;
-    });
-
-    return { ...userExist, ...data };
+    return { ...userExist, ...updateData };
   },
 
-  createAuthor: (parent, args, { db }, info) => {
+  createAuthor: (parent, { data }, { db }, info) => {
     const author = {
       id: uuidv4(),
-      ...args,
+      ...data,
     };
 
     db.authors.push(author);
-
     return author;
   },
-  updateAuthor: (parent, args, { db }, info) => {
-    const { id, ...data } = args;
+
+  updateAuthor: (parent, { id, data }, { db }, info) => {
     const authorExist = db.authors.find((author) => author.id === id);
 
     if (!authorExist) {
@@ -66,50 +58,39 @@ const Mutation = {
 
     db.authors = db.authors.map((author) => {
       if (author.id === id) {
-        author = {
-          ...author,
-          ...data,
-        };
+        author = { ...author, ...data };
         return author;
       }
-
       return author;
     });
 
     return { ...authorExist, ...data };
   },
-  createBook: (parent, args, { db }, info) => {
+
+  createBook: (parent, { data }, { db }, info) => {
     const book = {
       id: uuidv4(),
-      ...args,
+      ...data,
     };
 
     db.books.push(book);
-
     return book;
   },
-  updateBook: (parent, args, { db }, info) => {
-    const { id, ...data } = args;
+
+  updateBook: (parent, { id, data }, { db }, info) => {
     const bookExist = db.books.find((book) => book.id === id);
 
     if (!bookExist) {
       throw new Error("Book not found");
     }
 
-    db.books = db.books.map((book) => {
-      if (book.id === id) {
-        book = {
-          ...book,
-          ...data,
-        };
-        return book;
-      }
-
-      return book;
-    });
+    db.books = db.books.map((book) =>
+      book.id === id ? { ...book, ...data } : book
+    );
 
     return { ...bookExist, ...data };
   },
+
   deleteBook: (parent, { id }, { db }, info) => {
     const bookIndex = db.books.findIndex((book) => book.id === id);
 
@@ -118,7 +99,6 @@ const Mutation = {
     }
 
     const deletedBook = db.books[bookIndex];
-
     db.books = db.books.filter((book) => book.id !== id);
 
     return deletedBook;
