@@ -78,6 +78,49 @@ const Mutation = {
 
     return { ...authorExist, ...data };
   },
+  createBook: (parent, args, { db }, info) => {
+    const book = {
+      id: uuidv4(),
+      ...args,
+    };
+
+    db.books.push(book);
+
+    return book;
+  },
+  updateBook: (parent, args, { db }, info) => {
+    const { id, ...data } = args;
+    const bookExist = db.books.find((book) => book.id === id);
+
+    if (!bookExist) {
+      throw new Error("Book not found");
+    }
+
+    db.books = db.books.map((book) => {
+      if (book.id === id) {
+        book = {
+          ...book,
+          ...data,
+        };
+        return book;
+      }
+
+      return book;
+    });
+
+    return { ...bookExist, ...data };
+  },
+  deleteBook: (parent, args, { db }, info) => {
+    const bookIndex = db.books.findIndex((book) => book.id === args.id);
+
+    if (bookIndex === -1) {
+      throw new Error("Book not found");
+    }
+
+    const [book] = db.books.splice(bookIndex, 1);
+
+    return book;
+  },
 };
 
 export default Mutation;
