@@ -5,6 +5,7 @@ import { join } from "path";
 import Query from "./resolvers/Query";
 import Author from "./resolvers/Author";
 import Book from "./resolvers/Book";
+import Mutation from "./resolvers/Mutation";
 import db from "./db";
 
 const typeDefs = readFileSync(join(__dirname, "../src/schema.graphql"), "utf8");
@@ -12,7 +13,8 @@ const typeDefs = readFileSync(join(__dirname, "../src/schema.graphql"), "utf8");
 const resolvers = {
   Query,
   Author,
-  Book
+  Book,
+  Mutation
 };
 
 const context = {
